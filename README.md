@@ -10,3 +10,5 @@ pip install customtkinter
 - Certifique-se também de que os arquivos parser_usfx.py e a bíblia em formato .xml estão na mesma pasta do arquivo main.
 
 Você pode procurar outras versões da biblia com formato compátivel em:
+
+https://github.com/seven1m/open-bibles
