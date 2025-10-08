@@ -91,6 +91,7 @@ texto.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
 
 # mostrar o texto e pegar o livro
 def select_book():
+    texto.configure(state='normal')
     texto.delete("1.0", "end")
     book = ''
     if testamentoAtual == 'antigo':
@@ -100,7 +101,6 @@ def select_book():
     currentCap = capitulo_btn.cget("text").replace("Capítulo ", "")
     temp = ''
     if book in biblia and currentCap in biblia[book]:
-        texto.configure(state='normal')
         for num, verso in biblia[book][currentCap]:
             temp += f'{num} {verso}\n'
     else:
