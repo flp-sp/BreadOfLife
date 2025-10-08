@@ -3,7 +3,7 @@ Esse é um software de codigo abrto para estudo bíblico gratuito para computado
 - Para abrir o programa rode o arquivo main.py
 
 - Certifique-se de que você tem o customtkinter instalado, se não:
-```
+```python
 pip install customtkinter
 ```
 
