@@ -1,8 +1,12 @@
 import customtkinter as ctk
-from parser_usfx import parse_usfx
+from parser_almeida import parse_usfx
 from tkinter import filedialog
 
+from parser_kjv import parse_kjv
+from parser_grego import parse_grego
+
 biblia = parse_usfx('por-almeida.usfx.xml')
+currentCap = ''
 
 global testamentoAtual
 
@@ -29,7 +33,7 @@ notas.grid(row=0, column=2, rowspan=2, sticky="ns", padx=10, pady=10)
 capitulos = ctk.CTkFrame(frame_menu)
 capitulos.grid(row=6,column=0)
 
-# strong (parte inferior)
+# strong
 strong = ctk.CTkFrame(janela)
 strong.grid(row=2, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
 
@@ -37,7 +41,8 @@ strong.grid(row=2, column=0, columnspan=3, sticky="ew", padx=10, pady=10)
 segment = ctk.CTkFrame(janela)
 segment.grid(row=0, column=1, sticky="ew", padx=10, pady=(10, 0))
 
-selecionarBiblia = ctk.CTkSegmentedButton(segment, values=['biblia1'])
+selecionarBiblia = ctk.CTkSegmentedButton(segment, values=['Almeida', 'KJV', 'Grego NT'])
+selecionarBiblia.set('Almeida')
 selecionarBiblia.pack(fill="x", padx=10, pady=10)
 
 # biblia texto
@@ -64,6 +69,25 @@ capituloLabel = ctk.CTkLabel(frame_menu,font=('Arial', 16), text="Selecione um l
 capituloLabel.grid(row=4, column=0, sticky="ew", pady=5, padx=10)
 
 testamentoAtual = ''
+
+# funcao para selecionar versao e trocar o texto
+def selecionarVersao(versao):
+    global biblia
+    match versao:
+        case 'Almeida':
+            biblia = parse_usfx('por-almeida.usfx.xml')
+            if currentCap != '':
+                select_book()
+        case 'KJV':
+            biblia = parse_kjv('eng-kjv2006_usfx.xml')
+            if currentCap != '':
+                select_book()
+        case 'Grego NT':
+            biblia = parse_grego('grcbyz_usfx.xml')
+            if currentCap != '':
+                select_book()
+
+selecionarBiblia.configure(command=selecionarVersao)
 
 # selecionar capitulo func
 def abrir_lista_capitulos():
