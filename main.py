@@ -1,13 +1,31 @@
 import customtkinter as ctk
-from parser_almeida import parse_usfx
+from newparse import parse
 from tkinter import filedialog
 
-from parser_kjv import parse_kjv
-from parser_grego import parse_grego
 
-biblia = parse_usfx('por-almeida.usfx.xml')
-currentCap = ''
 
+livrosAntigo = [
+    'Genesis', 'Exodo', 'Levitico', 'Numeros', 'Deuteronomio',
+    'Josue', 'Juizes', 'Rute', '1Samuel', '2Samuel',
+    '1Reis', '2Reis', '1Cronicas', '2Cronicas', 'Esdras',
+    'Neemias', 'Ester', 'Jó', 'Salmos', 'Provérbios',
+    'Eclesiastes', 'Cantares', 'Isaias', 'Jeremias', 'Lamentacoes',
+    'Ezequiel', 'Daniel', 'Oseias', 'Joel', 'Amos',
+    'Obadias', 'Jonas', 'Miqueias', 'Naum', 'Habacuque',
+    'Sofonias', 'Ageu', 'Zacarias', 'Malaquias'
+]
+capitulosAntigo = [str(i+1) for i in range(len(livrosAntigo))]
+livrosNovo = [
+    'Mateus', 'Marcos', 'Lucas', 'Joao', 'Atos',
+    'Romanos', '1Corintios', '2Corintios', 'Gálatas', 'Efesios',
+    'Filipenses', 'Colossenses', '1Tessalonicenses', '2Tessalonicenses', '1Timoteo',
+    '2Timoteo', 'Tito', 'Filemom', 'Hebreus', 'Tiago',
+    '1Pedro', '2Pedro', '1Joao', '2Joao', '3Joao',
+    'Judas', 'Apocalipse'
+]
+capitulosNovo = [str(i + 40) for i in range(len(livrosNovo))]
+
+biblia = parse('PortugueseNAABible.xml')
 global testamentoAtual
 
 # janela config
@@ -53,16 +71,24 @@ texto.grid(row=1, column=1, sticky="nsew", padx=10, pady=(0, 10))
 labelAntigo = ctk.CTkLabel(frame_menu,font=('Arial', 18), text="Antigo Testamento")
 labelAntigo.grid(row=0, column=0, sticky="ew", pady=3)
 
-antigo = ctk.CTkOptionMenu(frame_menu, font=('Arial', 16),
-                            values=['GEN', 'EXO', 'LEV', 'NUM', 'DEU', 'JOS', 'JDG', 'RUT', '1SA', '2SA', '1KI', '2KI', '1CH', '2CH', 'EZR', 'NEH', 'EST', 'JOB', 'PSA', 'PRO', 'ECC', 'SNG', 'ISA', 'JER', 'LAM', 'EZK', 'DAN', 'HOS', 'JOL', 'AMO', 'OBA', 'JON', 'MIC', 'NAM', 'HAB', 'ZEP', 'HAG', 'ZEC', 'MAL'])
+antigo = ctk.CTkOptionMenu(frame_menu, font=('Arial', 16), values=['Não selecionado'])
 antigo.grid(row=1, column=0, sticky="ew", pady=3, padx=10)
+
+optionAntigo = []
+for capit in range(len(livrosAntigo)):
+    optionAntigo.append(livrosAntigo[capit])
+    antigo.configure(values=optionAntigo)
 
 labelNovo = ctk.CTkLabel(frame_menu,font=('Arial', 18), width=280, text="Novo Testamento")
 labelNovo.grid(row=2, column=0, sticky="ew", pady=3)
 
-novo = ctk.CTkOptionMenu(frame_menu, font=('Arial', 16),
-                          values=['MAT', 'MRK', 'LUK', 'JHN', 'ACT', 'ROM', '1CO', '2CO', 'GAL', 'EPH', 'PHP', 'COL', '1TH', '2TH', '1TI', '2TI', 'TIT', 'PHM', 'HEB', 'JAS', '1PE', '2PE', '1JN', '2JN', '3JN', 'JUD', 'REV'])
+novo = ctk.CTkOptionMenu(frame_menu, font=('Arial', 16), values=['Não selecionado'])
 novo.grid(row=3, column=0, sticky="ew", pady=3, padx=10)
+
+optionNovo = []
+for capit in range(len(livrosNovo)):
+    optionNovo.append(livrosNovo[capit])
+    novo.configure(values=optionNovo)
 
 # label selecionar capitulo
 capituloLabel = ctk.CTkLabel(frame_menu,font=('Arial', 16), text="Selecione um livro")
@@ -75,15 +101,15 @@ def selecionarVersao(versao):
     global biblia
     match versao:
         case 'Almeida':
-            biblia = parse_usfx('por-almeida.usfx.xml')
+            biblia = parse('PortugueseNAABible.xml')
             if currentCap != '':
                 select_book()
         case 'KJV':
-            biblia = parse_kjv('eng-kjv2006_usfx.xml')
+            biblia = parse('EnglishKJBible.xml')
             if currentCap != '':
                 select_book()
         case 'Grego NT':
-            biblia = parse_grego('grcbyz_usfx.xml')
+            biblia = parse('GreekTHGNTBible.xml')
             if currentCap != '':
                 select_book()
 
@@ -99,10 +125,13 @@ def abrir_lista_capitulos():
 
     book = ''
     if testamentoAtual == 'antigo':
-        book = antigo.get()
+        #book = teste['livroList'][antigo.get()] #antigo.get()
+        antigoIndex = livrosAntigo.index((antigo.get()))
+        book = capitulosAntigo[antigoIndex]
     elif testamentoAtual == 'novo':
-        book = novo.get()
-
+        novoIndex = livrosNovo.index((novo.get()))
+        book = capitulosNovo[novoIndex]
+    global biblia
     if book in biblia:
         for cap in biblia[book]:
            ctk.CTkButton(scroll, text=str(cap),command=lambda cap=cap: selecionar_capitulo(cap, capitulos)).pack(pady=2)
@@ -139,9 +168,11 @@ def select_book():
     texto.delete("1.0", "end")
     book = ''
     if testamentoAtual == 'antigo':
-        book = antigo.get()
+        antigoIndex = livrosAntigo.index((antigo.get()))
+        book = capitulosAntigo[antigoIndex]
     elif testamentoAtual == 'novo':
-        book = novo.get()
+        novoIndex = livrosNovo.index((novo.get()))
+        book = capitulosNovo[novoIndex]
     temp = ''
     if book in biblia and currentCap in biblia[book]:
         for num, verso in biblia[book][currentCap]:

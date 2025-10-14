@@ -13,3 +13,7 @@ pip install customtkinter
 ```
 
 - Certifique-se também de que os arquivos parsers.py e as bíblias em formato .xml estão na mesma pasta do arquivo main.
+
+- Todas as versões do repositorio abaixo são compativeis:
+
+https://github.com/Beblia/Holy-Bible-XML-Format/tree/master
